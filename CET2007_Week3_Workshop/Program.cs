@@ -224,7 +224,14 @@ namespace CET2007_Week3_Workshop
                     Notifier = new SmsNotifier();
                     Notifier.Notify($"Order Confirm for {selected.Name}. Total  = {Math.Round(Total)}");
                 }
+                double BasicTotal = new CheckOut().PlaceOrder(selected, EnterQuantity);
+                Console.WriteLine($"Basic Total for {EnterQuantity}  {selected.Name} : £ {BasicTotal} ");
+                double BasicTotalWithDiscount = new CheckOut().PlaceOrder(selected, EnterQuantity, 10);
+                Console.WriteLine($"With 10 % Discount: £ {BasicTotalWithDiscount}");
+                double BasicTotalWithDiscountAndDelivery = new CheckOut().PlaceOrder(selected, EnterQuantity, 10, 5);
+                Console.WriteLine($"With 10 % Discount and £5 Delivery Fees: £ {BasicTotalWithDiscountAndDelivery}");
             }
+
         }
     }
 }
