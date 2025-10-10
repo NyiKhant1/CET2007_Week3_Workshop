@@ -50,7 +50,7 @@ namespace CET2007_Week3_Workshop
         {}
         public override void Describe()
         {
-            Console.WriteLine(" Meal: ");
+            Console.Write("Meal: ");
             base.Describe();
         }
         public override double CalculateTotal(int quantity)
@@ -69,7 +69,7 @@ namespace CET2007_Week3_Workshop
         { }
         public override void Describe()
         {
-            Console.WriteLine(" Drink: ");
+            Console.Write("Drink: ");
             base.Describe();
         }
         public override double CalculateTotal(int quantity)
@@ -80,6 +80,44 @@ namespace CET2007_Week3_Workshop
             //return SubTotal;
         }
     }
+    interface IPaymentProcessor
+    {
+        void PaymentProcessor(double amount, string reference);
+    }
+  
+    class CardPayment: IPaymentProcessor
+    {
+        public void PaymentProcessor(double amount, string reference)
+        {
+            Console.WriteLine($"Card Payment of {amount} processed for {reference}");
+        }
+    }
+    class CashPayment : IPaymentProcessor
+    {
+        public void PaymentProcessor(double amount, string reference)
+        {
+            Console.WriteLine($"Cash Payment of {amount} processed for {reference}");
+        }
+    }
+    interface INotifier
+    {
+        void Notify(string message);
+    }
+    class EmailNotifier : INotifier
+    {
+        public void Notify(string message)
+        {
+            Console.WriteLine($"Email Sent: {message}");
+        }
+    }
+    class SmsNotifier : INotifier
+    {
+        public void Notify(string message)
+        {
+            Console.WriteLine($"SMS Sent: {message}");
+        }
+    }
+
     internal class Program
     {
         static void Main(string[] args)
@@ -97,6 +135,7 @@ namespace CET2007_Week3_Workshop
             int Choice;
             while (true)
             {
+                Console.WriteLine("______________________________________________________");
                 Console.WriteLine("Please Choose an Item 0 = Burger, 1 = Cola, 2 = Pizza");
                 string s = Console.ReadLine();
                 if (int.TryParse(s, out Choice) && Choice >= 0 && Choice < 3) break;
@@ -108,15 +147,41 @@ namespace CET2007_Week3_Workshop
             int EnterQuantity;
             while (true)
             {
+                Console.WriteLine("______________________________________________________");
                 Console.WriteLine("Please Enter the Quantity");
                 string s = Console.ReadLine();
                 if (int.TryParse(s, out EnterQuantity) && EnterQuantity >= 1 && EnterQuantity <= 40) break;
                 Console.WriteLine("Invalid Input, Please try againg");
             }
             double Total = selected.CalculateTotal(EnterQuantity);
-            Console.WriteLine(Math.Round(Total, 2));
+            Console.WriteLine("______________________________________________________");
+            Console.WriteLine("Your Total is: " + Math.Round(Total, 2));
 
-
+            // Ask Customer to Choose Payment Method 
+            Console.WriteLine("______________________________________________________");
+            Console.WriteLine("Please Choose Payment Method: (1 = Card, 2 = Cash) ");
+            while (true)
+            {
+                int PaymentMethod = int.Parse(Console.ReadLine());
+                IPaymentProcessor paymentProcessor;
+                if (PaymentMethod < 1 || PaymentMethod > 2)
+                {
+                    Console.WriteLine("Invalid Input, Please Try Again");
+                    continue;
+                }
+                else if (PaymentMethod == 1)
+                {
+                    paymentProcessor = new CardPayment();
+                    paymentProcessor.PaymentProcessor(Total, selected.Name);
+                    break;
+                }
+                else
+                {
+                    paymentProcessor = new CashPayment();
+                    paymentProcessor.PaymentProcessor(Total, selected.Name);
+                    break;
+                }
+            }
         }
     }
 }
