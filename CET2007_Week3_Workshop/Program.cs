@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -62,7 +63,7 @@ namespace CET2007_Week3_Workshop
 
         }
     }
-
+  
     class Drink : MenuItem
     {
         public Drink(string name, double price) : base(name, price)
@@ -115,6 +116,25 @@ namespace CET2007_Week3_Workshop
         public void Notify(string message)
         {
             Console.WriteLine($"SMS Sent: {message}");
+        }
+    }
+    class CheckOut
+    {
+        public double PlaceOrder (MenuItem Item, int quantity)
+        {
+            return Item.Price * quantity; 
+        }
+        public double PlaceOrder (MenuItem Item, int quantity, double discount)
+        {
+            double total = Item.Price * quantity;
+            discount = total * (discount / 100);
+            return total - discount; 
+        }
+        public double PlaceOrder (MenuItem Item, int quantity, double discount, double DeliveryFees)
+        {
+            double total = Item.Price * quantity;
+            discount = total * (discount / 100);
+            return total - discount + DeliveryFees;
         }
     }
 
@@ -172,14 +192,37 @@ namespace CET2007_Week3_Workshop
                 else if (PaymentMethod == 1)
                 {
                     paymentProcessor = new CardPayment();
-                    paymentProcessor.PaymentProcessor(Total, selected.Name);
+                    paymentProcessor.PaymentProcessor(Math.Round(Total), selected.Name);
                     break;
                 }
                 else
                 {
                     paymentProcessor = new CashPayment();
-                    paymentProcessor.PaymentProcessor(Total, selected.Name);
+                    paymentProcessor.PaymentProcessor(Math.Round(Total), selected.Name);
                     break;
+                }
+            }
+            // Notify Customer
+            Console.WriteLine("______________________________________________________");
+            Console.WriteLine("Please Choose Notification Method: (1 = Email, 2 = SMS)");
+            while (true)
+            {
+                int NotificationMethod = int.Parse(Console.ReadLine());
+                INotifier Notifier;
+                if (NotificationMethod < 1 || NotificationMethod > 2)
+                {
+                    Console.WriteLine("Invalid Input, Please try again");
+                    continue;
+                }
+                else if (NotificationMethod == 1)
+                {
+                    Notifier = new EmailNotifier();
+                    Notifier.Notify($"Order Confirm for {selected.Name}. Total = {Math.Round(Total)}");
+                }
+                else
+                {
+                    Notifier = new SmsNotifier();
+                    Notifier.Notify($"Order Confirm for {selected.Name}. Total  = {Math.Round(Total)}");
                 }
             }
         }
